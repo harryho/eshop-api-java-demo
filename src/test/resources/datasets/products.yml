@@ -1,0 +1,13 @@
+products:
+  - id: 1
+    name: "PRODUCT NAME"
+    genre: "PRODUCT GENRE"
+    unitPrice: 11
+    unitInStock: 1
+    imageUri: "IMAGE URI"
+  - id: 2
+    name: "PRODUCT NAME"
+    genre: "PRODUCT GENRE"
+    unitPrice: 22
+    unitInStock: 2
+    imageUri: "IMAGE URI"

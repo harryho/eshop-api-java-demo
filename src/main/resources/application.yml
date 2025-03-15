@@ -1,0 +1,28 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eshop
+    username: postgres
+    password: Password@123
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+springdoc:
+  api-docs:
+    path: /docs/api
+  swagger-ui:
+    path: /docs/ui
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,env,metrics
+  endpoint:
+    health:
+      show-details: always
+    env:
+      show-values: always

@@ -1,0 +1,11 @@
+version: '3.9'
+services:  
+  postgres:
+    image: postgres
+    container_name: infra-postgres-1
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: Password@123
+    ports:
+      - '5432:5432'

@@ -1,0 +1,179 @@
+@PORT=8080
+
+### Register staff user
+POST http://localhost:{{PORT}}/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "firstname": "John",
+    "lastname": "Doe",
+    "email": "john.doe@test.com",
+    "password": "password",
+    "role": "STAFF"
+}
+
+
+### Register admin user
+POST http://localhost:{{PORT}}/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "firstname": "Harry",
+    "lastname": "Ho",
+    "email": "harry.ho@test.com",
+    "password": "password",
+    "role": "ADMIN"
+}
+
+### Login as Staff
+# @name getToken
+POST http://localhost:{{PORT}}/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "john.doe@test.com",
+    "password": "password"
+}
+
+### Login as Admin
+# @name getToken
+POST http://localhost:{{PORT}}/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "harry.ho@test.com",
+    "password": "password"
+}
+
+
+
+### Add product
+# expect 201
+POST http://localhost:{{PORT}}/products HTTP/1.1
+content-type: application/json
+Authorization: Bearer  {{getToken.response.body.token}}
+
+{
+    "name": "Anta Air Zoom BB NXT",
+    "genre": "Basketball Shoes",
+    "unitPrice": "39.99",
+    "unitInStock": 11,
+    "releaseDate": "2020-09-30T00:00:00",
+    "imageUri": "http://dummyimage.com/200x200/eee/000"
+}
+
+### Add product 
+# expect 201
+POST http://localhost:{{PORT}}/products HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{getToken.response.body.token}}
+
+{
+    "name": "XTEP AntaCourt Royale",
+    "genre": "Tennis Shoes",
+    "unitPrice": "39.99",
+    "unitInStock": 11,
+    "releaseDate": "2021-09-30T00:00:00",
+    "imageUri": "http://dummyimage.com/200x200/eee/000"
+}
+
+### Update product
+# expect 204
+PUT http://localhost:{{PORT}}/products/4 HTTP/1.1 
+content-type: application/json
+Authorization: Bearer  {{getToken.response.body.token}}
+
+{
+    "name": "Anta Waffle Racer Crater",
+    "genre": "Running Shoes",
+    "unitPrice": 22.88,
+    "unitInStock": 12,
+    "releaseDate": "2010-09-30T00:00:00",
+    "imageUri": "http://dummyimage.com/200x200/eee/000"
+}
+
+
+
+
+### GET All products
+GET http://localhost:{{PORT}}/products HTTP/1.1
+Authorization: Bearer  {{getToken.response.body.token}}
+
+
+### Get product by id by default i.e. Version 1
+GET http://localhost:{{PORT}}/products/1 HTTP/1.1
+Authorization: Bearer  {{getToken.response.body.token}}
+
+
+### Delete product
+# expect 204
+DELETE  http://localhost:{{PORT}}/products/2 HTTP/1.1 
+Authorization: Bearer  {{getToken.response.body.token}}
+
+
+## ----------------------------  --------------------------------
+
+### Add product
+# expect 201
+POST http://localhost:{{PORT}}/products HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Anta Waffle Racer Crater",
+    "genre": "Running Shoes",
+    "unitPrice": 39.99,
+    "unitInStock": 11,
+    "releaseDate": "2010-09-30T00:00:00",
+    "imageUri": "http://dummyimage.com/200x200/eee/000"
+}
+
+
+
+### Delete product
+# expect 204
+DELETE  http://localhost:{{PORT}}/products/3 HTTP/1.1 
+
+
+##------------------ Exception Test ----------------------------
+
+
+# Bad Request test case 1
+
+### Add product
+# expect 204
+POST  http://localhost:{{PORT}}/products HTTP/1.1 
+content-type: application/json
+Authorization: Bearer {{getToken.response.body.token}}
+
+{
+    "name": "",
+    "genre": "Tennis Shoes",
+    "unitPrice": 33.33,
+    "unitInStock": 12,
+    "releaseDate": "2010-09-30T00:00:00",
+    "imageUri": "http://dummyimage.com/200x200/eee/000"
+}
+
+# Bad Request test case 2
+
+### Update product
+# expect 204
+PUT http://localhost:{{PORT}}/products/1 HTTP/1.1 
+content-type: application/json
+Authorization: Bearer {{getToken.response.body.token}}
+
+{
+    "name": "XXXX",
+    "genre": "Tennis Shoes",
+    "unitPrice": 33.33,
+    "unitInStock": 1,
+    "releaseDate": "-09-30T00:00:00",
+    "imageUri": "http://dummyimage.com/200x200/eee/000"
+}
+
+
+
+
+
+
+
