@@ -70,6 +70,7 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.genre", is(productGenre)))
                 .andExpect(jsonPath("$.unitPrice", is(22)))
                 .andExpect(jsonPath("$.unitInStock", is(2)))
+                .andExpect(jsonPath("$.releaseDate", is("2022-01-01")))
                 .andExpect(jsonPath("$.imageUri", is(imageUri)));
     }
 

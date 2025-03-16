@@ -101,13 +101,13 @@ Authorization: Bearer  {{getToken.response.body.token}}
 
 
 ### Get product by id by default i.e. Version 1
-GET http://localhost:{{PORT}}/products/1 HTTP/1.1
+GET http://localhost:{{PORT}}/products/4 HTTP/1.1
 Authorization: Bearer  {{getToken.response.body.token}}
 
 
 ### Delete product
 # expect 204
-DELETE  http://localhost:{{PORT}}/products/2 HTTP/1.1 
+DELETE  http://localhost:{{PORT}}/products/1 HTTP/1.1 
 Authorization: Bearer  {{getToken.response.body.token}}
 
 
@@ -140,7 +140,7 @@ DELETE  http://localhost:{{PORT}}/products/3 HTTP/1.1
 # Bad Request test case 1
 
 ### Add product
-# expect 204
+# expect 400
 POST  http://localhost:{{PORT}}/products HTTP/1.1 
 content-type: application/json
 Authorization: Bearer {{getToken.response.body.token}}
@@ -157,7 +157,7 @@ Authorization: Bearer {{getToken.response.body.token}}
 # Bad Request test case 2
 
 ### Update product
-# expect 204
+# expect 400
 PUT http://localhost:{{PORT}}/products/1 HTTP/1.1 
 content-type: application/json
 Authorization: Bearer {{getToken.response.body.token}}

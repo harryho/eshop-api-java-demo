@@ -1,13 +1,15 @@
-products:
+product:
   - id: 1
-    name: "PRODUCT NAME"
-    genre: "PRODUCT GENRE"
-    unitPrice: 11
-    unitInStock: 1
-    imageUri: "IMAGE URI"
+    name: "PRODUCT NAME 1"
+    genre: "PRODUCT GENRE 1"
+    unit_price: 11
+    unit_in_stock: 1
+    release_date: 2020-01-01
+    image_uri: "IMAGE URI 1"
   - id: 2
-    name: "PRODUCT NAME"
-    genre: "PRODUCT GENRE"
-    unitPrice: 22
-    unitInStock: 2
-    imageUri: "IMAGE URI"
+    name: "PRODUCT NAME 2"
+    genre: "PRODUCT GENRE 2"
+    unit_price: 22
+    unit_in_stock: 2
+    release_date: 2020-01-02
+    image_uri: "IMAGE URI 2"

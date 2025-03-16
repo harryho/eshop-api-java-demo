@@ -37,8 +37,6 @@ public class ProductRepositoryTest {
         return () -> dataSource.getConnection();
     }
 
-    private ConnectionHolder connectionHolder = () -> dataSource.getConnection();
-
     @Test
     @DataSet("products.yml")
     void testFindAll() {
@@ -57,19 +55,22 @@ public class ProductRepositoryTest {
         // Validate the product values
         Product p = product.get();
         Assertions.assertEquals(1, p.getId().intValue(), "Product ID should be 1");
-        Assertions.assertEquals("PRODUCT NAME", p.getName(), "Product name should be \"PRODUCT NAME\"");
-        Assertions.assertEquals(22, p.getUnitPrice().intValue(), "Product price should be 11");
-        Assertions.assertEquals(2, p.getUnitInStock().intValue(), "Product quantity should be 1");
+        Assertions.assertEquals("PRODUCT NAME 1", p.getName(), "Product name should be \"PRODUCT NAME 1\"");
+        Assertions.assertEquals("PRODUCT GENRE 1", p.getGenre(), "Product genre should be \"PRODUCT GENRE 1\"");
+        Assertions.assertEquals(11, p.getUnitPrice().intValue(), "Product price should be 11");
+        Assertions.assertEquals(1, p.getUnitInStock().intValue(), "Product in stock should be 1");
+        Assertions.assertEquals("IMAGE URI 1", p.getImageUri(), "Product image uri should be \"IMAGE URI 1\"");
+
     }
 
     @Test
     @DataSet("products.yml")
     void testFindByIdNotFound() {
         // Find the product with ID 300
-        Optional<Product> product = repository.findById(1L);
+        Optional<Product> product = repository.findById(100L);
 
         // Validate that we found it
-        Assertions.assertFalse(product.isPresent(), "Product with ID 300 should be not be found");
+        Assertions.assertFalse(product.isPresent(), "Product with ID 100 should be not be found");
     }
 }
 
