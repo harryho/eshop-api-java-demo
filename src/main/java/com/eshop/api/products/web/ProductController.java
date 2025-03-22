@@ -73,7 +73,7 @@ public class ProductController {
             updateProduct.setGenre(product.getGenre());
             updateProduct.setUnitPrice(product.getUnitPrice());
             updateProduct.setUnitInStock(product.getUnitInStock());
-            return ResponseEntity.ok(productService.saveProduct(updateProduct));
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
