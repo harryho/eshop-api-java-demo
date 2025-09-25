@@ -1,6 +1,6 @@
 ## E-Shop API Demo
 
-A demo api built on the top of Java 21,and Spring Boot
+A demo api built on the top of Java 21,and Spring Boot with basic authentication and authorization
 
 ### Prerequisite
 
