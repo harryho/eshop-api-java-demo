@@ -4,10 +4,12 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/eshop
     username: postgres
-    password: Password@123
+    password: YourStrong@Passw0rd
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   h2:
     console:
       enabled: true

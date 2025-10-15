@@ -12,26 +12,85 @@ A demo api built on the top of Java 21,and Spring Boot with basic authentication
   - Rest Client Extension
 - Docker
 
+### Java Environment Setup
 
-### Starting PostgresSQL with Docker
+This project requires Java 21. If you encounter `JAVA_HOME is set to an invalid directory` error, use the provided `java-setup.sh` script:
 
-```powershell
-docker compose up -d postgres
+```bash
+# Show current Java configuration
+./java-setup.sh current
+
+# List all installed Java versions
+./java-setup.sh list
+
+# Automatically fix Java environment for this project (sets Java 21)
+./java-setup.sh fix
+
+# Manually set a specific Java version
+./java-setup.sh set 21
 ```
 
+The script will update both your current terminal session and your `~/.zshrc` file for future sessions.
 
-### Create database `eshop` for test and development
+### Setting up PostgreSQL Database
 
-```powershell
-# login postgres server and follow instructions to create database
-docker exec -it infra-postgres-1 psql -U postgres -d postgres
+To set up the PostgreSQL database for this project, we recommend using the db-samples repository which provides a pre-configured PostgreSQL container.
+
+#### Step 1: Clone the db-samples repository
+
+```bash
+git clone https://github.com/harryho/db-samples.git
+cd db-samples
+```
+
+#### Step 2: Create the postgres-infra container
+
+```bash
+# Start the PostgreSQL container
+docker compose up -d postgres-infra
+```
+
+#### Step 3: Create database `eshop` for test and development
+
+```bash
+# Login to postgres server and create the eshop database
+docker exec -it postgres-infra psql -U postgres -d postgres
 
 postgres=# create database eshop;
 CREATE DATABASE
 postgres=# grant all on database eshop to postgres;
 GRANT
-
+postgres=# \q
 ```
+
+Alternatively, you can create the database using a single command:
+
+```bash
+docker exec -it postgres-infra psql -U postgres -d postgres -c "CREATE DATABASE eshop;"
+```
+
+#### Using the Database Setup Script (Recommended)
+
+For convenience, we provide a `db-setup.sh` script that simplifies database management:
+
+```bash
+# Create the database
+./db-setup.sh create
+
+# Drop the database
+./db-setup.sh drop
+
+# Drop and recreate the database (useful for resetting)
+./db-setup.sh recreate
+
+# Show database information and status
+./db-setup.sh info
+
+# Open psql shell for the eshop database
+./db-setup.sh shell
+```
+
+The script will automatically check if the postgres-infra container is running and handle database operations safely.
 
 ### Starting E-Shop  API
 

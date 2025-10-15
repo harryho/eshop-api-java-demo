@@ -113,10 +113,11 @@ Authorization: Bearer  {{getToken.response.body.token}}
 
 ## ----------------------------  --------------------------------
 
-### Add product
+### Add product (requires authentication)
 # expect 201
 POST http://localhost:{{PORT}}/products HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{getToken.response.body.token}}
 
 {
     "name": "Anta Waffle Racer Crater",
