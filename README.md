@@ -52,6 +52,37 @@ docker compose up -d postgres-infra
 
 #### Step 3: Create database `eshop` for test and development
 
+**Important:** Liquibase manages the database **schema** (tables, columns, indexes), but it cannot create the **database** itself. You must create the `eshop` database before running the application.
+
+##### Using the Database Setup Script (Option 1 - Recommended)
+
+For convenience, we provide a `db-setup.sh` script that simplifies database management:
+
+```bash
+# Create the database (first time setup)
+./db-setup.sh create
+
+# Reset database for Liquibase (drop tables, keep database)
+# Use this when you want to re-run Liquibase migrations
+./db-setup.sh reset
+
+# Drop the entire database
+./db-setup.sh drop
+
+# Drop and recreate the database from scratch
+./db-setup.sh recreate
+
+# Show database information and status
+./db-setup.sh info
+
+# Open psql shell for the eshop database
+./db-setup.sh shell
+```
+
+The script will automatically check if the postgres-infra container is running and handle database operations safely.
+
+##### Manual Creation (Option 2):
+
 ```bash
 # Login to postgres server and create the eshop database
 docker exec -it postgres-infra psql -U postgres -d postgres
@@ -63,34 +94,86 @@ GRANT
 postgres=# \q
 ```
 
-Alternatively, you can create the database using a single command:
+Or use a single command:
 
 ```bash
 docker exec -it postgres-infra psql -U postgres -d postgres -c "CREATE DATABASE eshop;"
 ```
 
-#### Using the Database Setup Script (Recommended)
 
-For convenience, we provide a `db-setup.sh` script that simplifies database management:
 
-```bash
-# Create the database
-./db-setup.sh create
+### Database Schema Management with Liquibase
 
-# Drop the database
-./db-setup.sh drop
+This project uses **Liquibase with JSON format** for database version control and migrations. Schema changes are automatically applied when the application starts.
 
-# Drop and recreate the database (useful for resetting)
-./db-setup.sh recreate
+**Key Benefits:**
+- ✅ Version-controlled database changes (stored in Git)
+- ✅ Rollback capability for all migrations
+- ✅ Team collaboration friendly (no merge conflicts)
+- ✅ Environment consistency (dev/staging/prod)
+- ✅ JSON format for better readability and maintainability
 
-# Show database information and status
-./db-setup.sh info
+**Important Notes:**
+- Database schema is managed by Liquibase (not Hibernate's `ddl-auto`)
+- All migrations are in JSON format at `src/main/resources/db/changelog/`
+- See `src/main/resources/db/changelog/README.md` for detailed documentation
+- **The database must exist before running the application** (Liquibase creates tables, not databases)
+- Liquibase tracks applied changes in the `databasechangelog` table
 
-# Open psql shell for the eshop database
-./db-setup.sh shell
-```
+**Current Schema:**
+- **product** table: id, name, genre, unit_price, unit_in_stock, release_date, image_uri
+- **app_user** table: id, firstname, lastname, email, password, role
+- Indexes: idx_product_name, idx_product_genre, idx_user_email
 
-The script will automatically check if the postgres-infra container is running and handle database operations safely.
+**Workflow:**
+
+1. **First time setup:**
+   ```bash
+   # Create the eshop database (required first step)
+   ./db-setup.sh create
+   
+   # Start the application - Liquibase will automatically create all tables
+   ./gradlew bootRun
+   ```
+   
+   Liquibase will:
+   - Create the `databasechangelog` and `databasechangeloglock` tables
+   - Apply all changesets from `db/changelog/changes/001-initial-schema.json`
+   - Create product and app_user tables with all indexes
+
+2. **To reset and re-run migrations (for testing):**
+   ```bash
+   # Drop all tables but keep the database
+   ./db-setup.sh reset
+   
+   # Start the application - Liquibase will recreate all tables
+   ./gradlew bootRun
+   ```
+   
+   This is useful when you want to test migrations from scratch without losing the database itself.
+
+3. **Complete fresh start (clean slate):**
+   ```bash
+   # Drop and recreate the entire database
+   ./db-setup.sh recreate
+   
+   # Start the application - Liquibase will create everything
+   ./gradlew bootRun
+   ```
+
+4. **Check database status:**
+   ```bash
+   # Show database information, tables, and Liquibase status
+   ./db-setup.sh info
+   ```
+
+**Adding New Schema Changes:**
+
+When you need to modify the database:
+1. Create a new JSON changeset file: `src/main/resources/db/changelog/changes/002-your-change.json`
+2. Add it to the master changelog: `db.changelog-master.json`
+3. Run the application - Liquibase will automatically apply the new changes
+4. See the `db/changelog/README.md` for detailed examples and best practices
 
 ### Starting E-Shop  API
 

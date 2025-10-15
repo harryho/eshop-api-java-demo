@@ -79,7 +79,7 @@ Authorization: Bearer {{getToken.response.body.token}}
 
 ### Update product
 # expect 204
-PUT http://localhost:{{PORT}}/products/4 HTTP/1.1 
+PUT http://localhost:{{PORT}}/products/2 HTTP/1.1 
 content-type: application/json
 Authorization: Bearer  {{getToken.response.body.token}}
 

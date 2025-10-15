@@ -1,0 +1,228 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "001-create-product-table",
+        "author": "system",
+        "comment": "Create product table for e-shop application",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "product",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "BIGINT",
+                    "autoIncrement": true,
+                    "constraints": {
+                      "primaryKey": true,
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "name",
+                    "type": "VARCHAR(128)",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "genre",
+                    "type": "VARCHAR(128)",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "unit_price",
+                    "type": "NUMERIC(20,2)"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "unit_in_stock",
+                    "type": "INTEGER",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "release_date",
+                    "type": "DATE"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "image_uri",
+                    "type": "VARCHAR(200)",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "product"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "002-create-user-table",
+        "author": "system",
+        "comment": "Create app_user table for authentication and authorization",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "app_user",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "autoIncrement": true,
+                    "constraints": {
+                      "primaryKey": true,
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "firstname",
+                    "type": "VARCHAR(255)"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "lastname",
+                    "type": "VARCHAR(255)"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "email",
+                    "type": "VARCHAR(255)",
+                    "constraints": {
+                      "nullable": false,
+                      "unique": true
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "password",
+                    "type": "VARCHAR(255)",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "role",
+                    "type": "VARCHAR(20)",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "app_user"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "003-create-indexes",
+        "author": "system",
+        "comment": "Create indexes for better query performance",
+        "changes": [
+          {
+            "createIndex": {
+              "tableName": "product",
+              "indexName": "idx_product_name",
+              "columns": [
+                {
+                  "column": {
+                    "name": "name"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "createIndex": {
+              "tableName": "product",
+              "indexName": "idx_product_genre",
+              "columns": [
+                {
+                  "column": {
+                    "name": "genre"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "createIndex": {
+              "tableName": "app_user",
+              "indexName": "idx_user_email",
+              "columns": [
+                {
+                  "column": {
+                    "name": "email"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropIndex": {
+              "tableName": "product",
+              "indexName": "idx_product_name"
+            }
+          },
+          {
+            "dropIndex": {
+              "tableName": "product",
+              "indexName": "idx_product_genre"
+            }
+          },
+          {
+            "dropIndex": {
+              "tableName": "app_user",
+              "indexName": "idx_user_email"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

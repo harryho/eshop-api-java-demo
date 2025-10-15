@@ -27,7 +27,7 @@ check_container() {
 
 # Function to check if database exists
 db_exists() {
-    docker exec -it ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'" | grep -q 1
+    docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'" | grep -q 1
 }
 
 # Function to create database
@@ -46,8 +46,8 @@ create_db() {
         fi
     fi
     
-    docker exec -it ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "CREATE DATABASE ${DB_NAME};"
-    docker exec -it ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO ${DB_USER};"
+    docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "CREATE DATABASE ${DB_NAME};"
+    docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO ${DB_USER};"
     
     echo -e "${GREEN}Database '${DB_NAME}' created successfully!${NC}"
 }
@@ -62,9 +62,9 @@ drop_db() {
     fi
     
     # Terminate all connections to the database
-    docker exec -it ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '${DB_NAME}' AND pid <> pg_backend_pid();"
+    docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '${DB_NAME}' AND pid <> pg_backend_pid();"
     
-    docker exec -it ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"
+    docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"
     
     echo -e "${GREEN}Database '${DB_NAME}' dropped successfully!${NC}"
 }
@@ -104,14 +104,52 @@ open_shell() {
     docker exec -it ${CONTAINER_NAME} psql -U ${DB_USER} -d ${DB_NAME}
 }
 
+# Function to reset database for Liquibase
+reset_for_liquibase() {
+    echo -e "${YELLOW}Resetting database for Liquibase migrations...${NC}"
+    echo ""
+    
+    if db_exists; then
+        echo "This will:"
+        echo "  1. Drop all tables in the '${DB_NAME}' database"
+        echo "  2. Keep the database (so app can connect)"
+        echo "  3. Let Liquibase recreate tables on next app start"
+        echo ""
+        read -p "Continue? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Cancelled."
+            exit 0
+        fi
+        
+        echo -e "${YELLOW}Dropping all tables...${NC}"
+        docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -d ${DB_NAME} -c "DROP TABLE IF EXISTS product CASCADE; DROP TABLE IF EXISTS app_user CASCADE; DROP TABLE IF EXISTS databasechangelog CASCADE; DROP TABLE IF EXISTS databasechangeloglock CASCADE;"
+        
+        echo -e "${GREEN}✓ Database reset complete!${NC}"
+        echo ""
+        echo "Tables have been dropped. The '${DB_NAME}' database still exists."
+        echo "When you start the application, Liquibase will recreate all tables."
+        echo ""
+        echo "To start the application:"
+        echo "  ./gradlew bootRun"
+    else
+        echo -e "${YELLOW}Database '${DB_NAME}' does not exist. Creating it...${NC}"
+        create_db
+        echo ""
+        echo -e "${GREEN}✓ Database created!${NC}"
+        echo "When you start the application, Liquibase will create all tables."
+    fi
+}
+
 # Main script
 show_usage() {
-    echo "Usage: $0 {create|drop|recreate|info|shell}"
+    echo "Usage: $0 {create|drop|recreate|reset|info|shell}"
     echo ""
     echo "Commands:"
     echo "  create    - Create the eshop database"
     echo "  drop      - Drop the eshop database"
     echo "  recreate  - Drop and recreate the eshop database"
+    echo "  reset     - Reset database for Liquibase (drop tables, keep DB)"
     echo "  info      - Show database information and status"
     echo "  shell     - Open psql shell for the eshop database"
     echo ""
@@ -131,6 +169,9 @@ case "${1:-}" in
     recreate)
         drop_db
         create_db
+        ;;
+    reset)
+        reset_for_liquibase
         ;;
     info)
         show_info
