@@ -1,0 +1,45 @@
+version: 2
+# Routine (non-security) dependency updates. Vulnerability-driven updates
+# are handled separately by Dependabot security updates, which stay on
+# regardless of this file.
+updates:
+  # Gradle dependencies (Spring Boot, plugins, test libs, etc.)
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "java"
+    groups:
+      spring:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "org.springframework*"
+          - "io.spring.gradle*"
+      gradle-plugins:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*gradle.plugin*"
+
+  # Docker image tags referenced in docker-compose.yml
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
